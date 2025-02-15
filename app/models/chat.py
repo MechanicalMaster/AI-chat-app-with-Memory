@@ -11,4 +11,7 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
-    history: Optional[List[Message]] = None 
+    history: Optional[List[Message]] = None
+
+class PasswordRequest(BaseModel):
+    password: str 

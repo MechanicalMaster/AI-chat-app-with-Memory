@@ -1,9 +1,15 @@
 from fastapi import APIRouter, HTTPException
-from app.models.chat import ChatRequest, ChatResponse
+from app.models.chat import ChatRequest, ChatResponse, PasswordRequest
 from app.services.chat_service import ChatService
 
 router = APIRouter()
 chat_service = ChatService()
+
+@router.post("/verify-password")
+async def verify_password(request: PasswordRequest):
+    if request.password == "CPAdemo@123":
+        return {"status": "success"}
+    raise HTTPException(status_code=401, detail="Invalid password")
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
