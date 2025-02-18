@@ -1,10 +1,10 @@
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 from app.config import settings
 from app.services.memory_service import MemoryService
 import re
 from app.utils.logger import logger
-from app.utils.filters import input_output_filter
+from app.utils.filters import InputOutputFilter
 
 class ChatService:
     def __init__(self):
@@ -14,12 +14,13 @@ class ChatService:
             max_tokens=settings.MAX_TOKENS
         )
         self.memory_service = MemoryService()
+        self.filter = InputOutputFilter()
 
     async def get_response(self, user_input: str, session_id: str) -> str:
         """Get response from LLM with enhanced memory and filtering"""
         try:
             # Filter input
-            is_safe, filtered_input = input_output_filter.filter_input(user_input)
+            is_safe, filtered_input = self.filter.filter_input(user_input)
             if not is_safe:
                 logger.log_chat(session_id, user_input, filtered_input)
                 return filtered_input
@@ -38,7 +39,7 @@ class ChatService:
             response_text = response.generations[0][0].text
 
             # Filter output
-            filtered_response = input_output_filter.filter_output(response_text)
+            filtered_response = self.filter.filter_output(response_text)
 
             # Log the interaction
             logger.log_chat(session_id, filtered_input, filtered_response)

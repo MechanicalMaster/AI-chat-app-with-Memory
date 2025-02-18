@@ -8,17 +8,9 @@ class ChatApp {
         this.themeToggle = document.getElementById('theme-toggle');
         this.isWaitingForResponse = false;
         
-        // Add password check initialization
-        this.passwordModal = document.getElementById('password-modal');
-        this.chatContainer = document.querySelector('.chat-container');
-        this.passwordInput = document.getElementById('password-input');
-        this.passwordSubmit = document.getElementById('password-submit');
-        this.passwordError = document.getElementById('password-error');
-        
         this.setupEventListeners();
         this.loadTheme();
         this.displayWelcomeMessage();
-        this.initializePasswordCheck();
     }
 
     generateSessionId() {
@@ -131,39 +123,6 @@ class ChatApp {
         messageDiv.textContent = content;
         this.messageContainer.appendChild(messageDiv);
         this.messageContainer.scrollTop = this.messageContainer.scrollHeight;
-    }
-
-    initializePasswordCheck() {
-        // Check if already authenticated
-        if (localStorage.getItem('chatAuthenticated') === 'true') {
-            this.showChat();
-            return;
-        }
-
-        this.passwordSubmit.addEventListener('click', () => this.verifyPassword());
-        this.passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.verifyPassword();
-            }
-        });
-    }
-
-    verifyPassword() {
-        const password = this.passwordInput.value;
-        if (password === 'CPAdemo@123') {
-            localStorage.setItem('chatAuthenticated', 'true');
-            this.showChat();
-        } else {
-            this.passwordError.style.display = 'block';
-            this.passwordError.textContent = 'Incorrect password. Please try again.';
-            this.passwordInput.value = '';
-        }
-    }
-
-    showChat() {
-        this.passwordModal.style.display = 'none';
-        this.chatContainer.style.display = 'block';
-        this.chatContainer.classList.add('showChat');
     }
 }
 
