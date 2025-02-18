@@ -3,13 +3,14 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
+from app.core.config import settings
 
 app = FastAPI(title="Channel Finance Assistant")
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust this in production
+    allow_origins=settings.CORS_ORIGINS.split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -18,14 +19,14 @@ app.add_middleware(
 # Mount static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-# Include API routes
-app.include_router(router, prefix="/api")
-
 # Templates
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="app/templates")
+
+# Include API routes without prefix
+app.include_router(router)  # Remove the prefix="/api"
 
 @app.get("/")
-async def home(request: Request):
+async def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/health")

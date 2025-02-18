@@ -1,22 +1,70 @@
 from langchain_openai import ChatOpenAI
-from langchain.schema import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnableWithMessageHistory
 from app.config import settings
 from app.services.memory_service import MemoryService
-import re
 from app.utils.logger import logger
 from app.utils.filters import InputOutputFilter
 
 class ChatService:
-    def __init__(self):
+    def __init__(self, api_key: str):
         self.llm = ChatOpenAI(
-            temperature=settings.TEMPERATURE,
-            model_name=settings.MODEL_NAME,
-            max_tokens=settings.MAX_TOKENS
+            api_key=api_key,
+            temperature=0.7,
+            model_name="gpt-3.5-turbo"
         )
+        
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are a helpful Channel Finance assistant. You help users with loan-related questions."),
+            MessagesPlaceholder(variable_name="history"),
+            ("human", "{input}")
+        ])
+        
+        self.chain = self.prompt | self.llm | StrOutputParser()
         self.memory_service = MemoryService()
         self.filter = InputOutputFilter()
 
-    async def get_response(self, user_input: str, session_id: str) -> str:
+    async def get_response(self, message: str, session_id: str) -> str:
+        """Get response from LLM with enhanced memory and filtering"""
+        try:
+            # Filter input
+            is_safe, filtered_input = self.filter.filter_input(message)
+            if not is_safe:
+                logger.log_chat(session_id, message, filtered_input)
+                return filtered_input
+
+            # Get conversation history
+            history = await self.memory_service.get_formatted_history(session_id)
+            
+            # Generate response
+            response = await self.chain.ainvoke({
+                "history": history,
+                "input": filtered_input
+            })
+
+            # Filter output
+            filtered_response = self.filter.filter_output(response)
+
+            # Log the interaction
+            logger.log_chat(session_id, filtered_input, filtered_response)
+
+            # Save to memory
+            self.memory_service.save_context(session_id, filtered_input, filtered_response)
+
+            return filtered_response
+            
+        except Exception as e:
+            error_msg = str(e)
+            logger.log_error(session_id, error_msg)
+            return "I apologize, but I encountered an error. Please try again."
+
+    def clear_memory(self) -> None:
+        """Clear the conversation memory"""
+        self.memory_service.clear()
+
+    async def get_response_enhanced(self, user_input: str, session_id: str) -> str:
         """Get response from LLM with enhanced memory and filtering"""
         try:
             # Filter input
