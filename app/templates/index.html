@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel Finance Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Add FontAwesome for professional icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <h1 class="app-title">Channel Finance Assistant</h1>
+        <div class="action-buttons">
+            <button class="btn btn-theme" onclick="toggleTheme()">
+                <i class="fas fa-moon icon"></i>
+                <span class="hidden-mobile">Theme</span>
+            </button>
+            <button class="btn btn-clear" onclick="clearChat()">
+                <i class="fas fa-trash-alt icon"></i>
+                <span class="hidden-mobile">Clear</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="chat-container" id="chat-container">
+        <div class="message assistant-message">
+            Hello! I'm your Channel Finance assistant. How can I help you with loan-related questions today?
+        </div>
+    </main>
+
+    <form class="input-container" onsubmit="sendMessage(event)">
+        <input type="text" 
+               class="chat-input" 
+               id="user-input" 
+               placeholder="Ask about our loan policy..."
+               autocomplete="off">
+        <button type="submit" class="send-button">
+            <i class="fas fa-paper-plane icon"></i>
+            <span class="hidden-mobile">Send</span>
+        </button>
+    </form>
+
+    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+</body>
+</html> 

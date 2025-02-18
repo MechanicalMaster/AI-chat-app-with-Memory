@@ -16,13 +16,13 @@ app.add_middleware(
 )
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Include API routes
 app.include_router(router, prefix="/api")
 
-# Templates
-templates = Jinja2Templates(directory="templates")
+# Templates - Updated path
+templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/")
 async def home(request: Request):
