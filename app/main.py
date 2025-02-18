@@ -21,8 +21,8 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 # Include API routes
 app.include_router(router, prefix="/api")
 
-# Templates - Updated path
-templates = Jinja2Templates(directory="app/templates")
+# Templates
+templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
 async def home(request: Request):
