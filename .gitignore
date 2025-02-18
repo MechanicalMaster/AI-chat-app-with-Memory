@@ -40,4 +40,11 @@ logs/
 
 # OS
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Don't ignore static files
+!app/static/
+!app/static/css/
+!app/static/js/
+!app/static/css/styles.css
+!app/static/js/main.js 

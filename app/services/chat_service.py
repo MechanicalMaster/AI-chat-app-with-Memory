@@ -17,7 +17,7 @@ class ChatService:
         )
         
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are a helpful Channel Finance assistant. You help users with loan-related questions."),
+            ("system","You are an expert Indian Banker specializing in Channel Finance (Dealer Finance/Supply Chain Finance). Your goal is to answer questions about Channel Finance to dealers of anchor companies in a clear, short and professional manner"),
             MessagesPlaceholder(variable_name="history"),
             ("human", "{input}")
         ])
